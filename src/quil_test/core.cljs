@@ -10,13 +10,25 @@
   ; setup function returns initial state. It contains
   ; circle color and position.
 
+
   {:color 0
    :x 0
-   :y 100
+   :y 0
    :parts #{}
 
   }
+
+
   )
+
+
+(defn timer [p]
+  (update-in p [:time] #(- % 1))
+)
+
+(defn old?[p]
+  (> 0 (:time p))
+)
 
 (defn update-state [state]
   ; Update sketch state by changing circle color and position.
@@ -29,7 +41,21 @@
 
    :y (q/mouse-y)
 
-   :parts (:parts state)
+
+
+   :parts
+    (remove old?
+    (mapv
+      timer
+
+      (conj (:parts state)
+          {:x (q/mouse-x) :y (q/mouse-y) :col (:color state) :time 15}
+          )
+
+
+     )
+    )
+
 
 }
 
@@ -39,15 +65,32 @@
 (defn draw-state [state]
   ; Clear the sketch by filling it with light-grey color.
   (q/background 240)
-  ; Set circle color.
-  (q/fill (:color state) 255 255)
-  ; Calculate x and y coordinates of the circle.
-  (let [mult 1
-        x (* mult (:x state))
-        y (* mult (:y state))]
 
-      ; Draw the circle.
-      (q/ellipse x y 10 10)))
+
+
+
+
+
+
+  (loop [ps (:parts state)]
+    (let [f (first ps)
+          x (:x f)
+          y (:y f)
+          col (:col f)]
+    (if (empty? ps)
+      :nothing
+      (do
+
+        (q/fill col 255 255)
+        (q/ellipse x y 10 10)
+        (recur (rest ps)))
+
+    )
+    )
+  )
+
+)
+
 
 (q/defsketch quil-test
   :host "quil-test"
