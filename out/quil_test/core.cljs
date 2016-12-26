@@ -31,7 +31,6 @@
 )
 
 (defn update-state [state]
-  ; Update sketch state by changing circle color and position.
 
 {
    :color (mod (+ (:color state) 0.7) 255)
@@ -76,13 +75,16 @@
     (let [f (first ps)
           x (:x f)
           y (:y f)
-          col (:col f)]
-    (if (empty? ps)
+          col (:col f)
+          s (second ps)
+          x0 (:x s)
+          y0 (:y s)]
+    (if (<= (count ps) 1)
       :nothing
       (do
 
-        (q/fill col 255 255)
-        (q/ellipse x y 10 10)
+        (q/stroke col 255 255)
+        (q/line x y x0 y0)
         (recur (rest ps)))
 
     )
